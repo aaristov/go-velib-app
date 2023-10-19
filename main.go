@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"os"
 )
@@ -25,14 +24,16 @@ type StationData struct {
 			StationCode                 string           `json:"stationCode"`
 			StationID                   int              `json:"station_id"`
 			NumBikesAvailable           int              `json:"numBikesAvailable"`
-			NumBikesAvailableTypes      []map[string]int `json:"num_bikes_available_types"`
+			NumBikesAvailableTypes      []map[string]int `json:"-"`
 			NumDocksAvailable           int              `json:"numDocksAvailable"`
+			Num_docks_available         int              `json:"num_docks_available"`
+			Num_bikes_available         int              `json:"num_bikes_available"`
 			IsInstalled                 int              `json:"is_installed"`
 			IsReturning                 int              `json:"is_returning"`
 			IsRenting                   int              `json:"is_renting"`
 			LastReported                int64            `json:"last_reported"`
-			NumMechanicalBikesAvailable int              // Custom field to hold the count of mechanical bikes
-			NumEBikesAvailable          int              // Custom field to hold the count of e-bikes
+			NumMechanicalBikesAvailable int              `json:"num_mechanical_bikes_available"`
+			NumEBikesAvailable          int              `json:"num_ebikes_available"`
 		} `json:"stations"`
 	} `json:"data"`
 }
@@ -61,8 +62,9 @@ func fetchData() (*StationData, error) {
 			}
 		}
 	}
+
 	file, _ := json.MarshalIndent(data, "", " ")
-	_ = ioutil.WriteFile("test.json", file, 0644)
+	_ = os.WriteFile("test.json", file, 0644)
 
 	return &data, nil
 }
@@ -70,10 +72,12 @@ func fetchData() (*StationData, error) {
 func pushToSupabase(data *StationData) error {
 	client := &http.Client{}
 	for _, station := range data.Data.Stations {
+
 		stationJSON, err := json.Marshal(station)
 		if err != nil {
 			return err
 		}
+		fmt.Println(string(stationJSON))
 
 		req, err := http.NewRequest("POST", supabaseURL+"/"+supabaseTable, bytes.NewBuffer(stationJSON))
 		if err != nil {
@@ -81,9 +85,10 @@ func pushToSupabase(data *StationData) error {
 		}
 
 		req.Header.Set("apikey", supabaseAPIKey)
-		// req.Header.Set("Prefer", "resolution=merge-duplicates")
+		req.Header.Set("Prefer", "return=minimal")
 		req.Header.Set("Authorization", "Bearer "+supabaseAPIKey)
 		req.Header.Set("Content-Type", "application/json")
+		fmt.Println(supabaseURL + "/" + supabaseTable)
 
 		resp, err := client.Do(req)
 		if err != nil {
