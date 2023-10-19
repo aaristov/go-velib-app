@@ -63,9 +63,6 @@ func fetchData() (*StationData, error) {
 		}
 	}
 
-	file, _ := json.MarshalIndent(data, "", " ")
-	_ = os.WriteFile("test.json", file, 0644)
-
 	return &data, nil
 }
 
