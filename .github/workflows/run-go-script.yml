@@ -2,7 +2,7 @@ name: Run Go Script
 
 on:
   schedule:
-    # Run the job every 1 minute
+    # Run the job every 2 minute
     - cron: '*/2 * * * *'
 
 jobs:
