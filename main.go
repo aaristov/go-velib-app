@@ -71,13 +71,12 @@ func fetchData() (*StationData, error) {
 
 func pushToSupabase(data *StationData) error {
 	client := &http.Client{}
-	for _, station := range data.Data.Stations {
 
+	for _, station := range data.Data.Stations {
 		stationJSON, err := json.Marshal(station)
 		if err != nil {
 			return err
 		}
-		fmt.Println(string(stationJSON))
 
 		req, err := http.NewRequest("POST", supabaseURL+"/"+supabaseTable, bytes.NewBuffer(stationJSON))
 		if err != nil {
@@ -88,7 +87,6 @@ func pushToSupabase(data *StationData) error {
 		req.Header.Set("Prefer", "return=minimal")
 		req.Header.Set("Authorization", "Bearer "+supabaseAPIKey)
 		req.Header.Set("Content-Type", "application/json")
-		fmt.Println(supabaseURL + "/" + supabaseTable)
 
 		resp, err := client.Do(req)
 		if err != nil {
@@ -96,8 +94,8 @@ func pushToSupabase(data *StationData) error {
 		}
 		defer resp.Body.Close()
 
-		if resp.StatusCode != http.StatusOK {
-			return fmt.Errorf("failed to insert data: %s, %s", resp.Status, resp.Body)
+		if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
+			return fmt.Errorf("failed to insert data: %s code %s", string(stationJSON), resp.Status)
 		}
 	}
 
