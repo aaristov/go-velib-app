@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 )
@@ -39,6 +40,9 @@ type StationData struct {
 }
 
 func fetchData() (*StationData, error) {
+	if supabaseURL == "" {
+		log.Fatalf("SUPABASE_URL is empty")
+	}
 	resp, err := http.Get(endpoint)
 	if err != nil {
 		return nil, err

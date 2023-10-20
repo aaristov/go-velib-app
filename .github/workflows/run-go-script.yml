@@ -3,7 +3,6 @@ name: Run Go Script
 on:
   workflow_dispatch:  # This allows manual triggering from the GitHub UI
 
-
   # schedule:
     # Run the job every 5 minute
     # - cron: '*/5 * * * *'
