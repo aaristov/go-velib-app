@@ -8,8 +8,8 @@ import (
 	"os"
 )
 
-const (
-	endpoint      = "https://velib-metropole-opendata.smoove.pro/opendata/Velib_Metropole/station_status.json"
+const ( endpoint = 
+	"https://velib-metropole-opendata.smovengo.cloud/opendata/Velib_Metropole/station_status.json"
 	supabaseTable = "rest/v1/stations"
 )
 
