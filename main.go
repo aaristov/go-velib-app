@@ -95,7 +95,7 @@ func pushToSupabase(data *StationData) error {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
-		return fmt.Errorf("failed to insert data: %s code %s", string(stationJSON[:2]), resp.Status)
+		return fmt.Errorf("failed to insert data: %s code %s", string(stationJSON[:200]), resp.Status)
 	}
 
 	return nil
